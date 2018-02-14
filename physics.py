@@ -9,10 +9,12 @@ class PhysicsEngine:
     X_WHEELBASE = 0.50
     Y_WHEELBASE = 0.62
 
-    targets = [(1, 1), (2, 2)]
+    
 
     def __init__(self, controller):
         self.controller = controller
+
+        self.targets = [(1, 1), (2, 2)]
 
         self.drive_counts_per_rev = \
             SwerveModule.SRX_MAG_COUNTS_PER_REV*SwerveModule.DRIVE_ENCODER_GEAR_REDUCTION
@@ -74,30 +76,30 @@ class PhysicsEngine:
 
 
     def vision_sim(self):
-    pos_x = self.controller.x / 3.2808
-    pos_y = self.controller.y / 3.2808
-    pos_angle_deg = self.controller.angle
-    pos_angle = math.radians(-pos_angle_deg)
-    z_dist = -0.42 + 0.15
+        pos_x = self.controller.x / 3.2808
+        pos_y = self.controller.y / 3.2808
+        pos_angle_deg = self.controller.angle
+        pos_angle = math.radians(-pos_angle_deg)
+        z_dist = -0.42 + 0.15
 
-    for target in targets:
-        x_len = target[0] - pos_x
-        y_len = target[1] - pos_y
+        for target in self.targets:
+            x_len = target[0] - pos_x
+            y_len = target[1] - pos_y
 
-        fov = math.radians(75)/2
+            fov = math.radians(75)/2
 
-        field_angle = math.atan2(pos_y, pos_x)
+            field_angle = math.atan2(pos_y, pos_x)
 
-        distance = math.hypot(x_len, y_len)
+            distance = math.hypot(x_len, y_len)
 
-        output = []
-        angle = field_angle + (pos_angle - pos_angle/2)
+            output = []
+            angle = field_angle + (pos_angle - pos_angle/2)
 
-        if -fov <= angle <= fov and distance < 3.5:
-        zenith_angle = math.atan2(distance, z_dist)
-            output.extend([angle, zenith_angle])
+            if -fov <= angle <= fov and distance < 3.5:
+                zenith_angle = math.atan2(distance, z_dist)
+                output.extend([angle, zenith_angle])
 
-    return output
+        return output
 
 
 def better_four_motor_swerve_drivetrain(module_speeds, module_angles, module_x_offsets, module_y_offsets):
