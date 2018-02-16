@@ -17,6 +17,8 @@ class PhysicsEngine:
 
     
 
+    
+
     def __init__(self, controller):
         self.controller = controller
 
@@ -120,6 +122,33 @@ class PhysicsEngine:
             top_switch["value"] = False
 
         lift_srx['quad_position'] = int(min(lift_srx['quad_position'], Lifter.TOP_HEIGHT*Lifter.COUNTS_PER_METRE))
+
+
+    def vision_sim(self):
+        pos_x = (self.controller.x - self.start_pos_x) / 3.2808
+        pos_y = (self.controller.y - self.start_pos_y) / 3.2808
+        pos_angle_deg = self.controller.angle - self.start_pos_angle
+        pos_angle = math.radians(-pos_angle_deg)
+        z_dist = -0.42 + 0.15
+
+        for target in self.targets:
+            x_len = target[0] - pos_x
+            y_len = target[1] - pos_y
+
+            fov = math.radians(75)/2
+
+            field_angle = math.atan2(pos_y, pos_x)
+
+            distance = math.hypot(x_len, y_len)
+
+            output = []
+            angle = field_angle + (pos_angle - pos_angle/2)
+
+            if -fov <= angle <= fov and distance < 3.5:
+                zenith_angle = math.atan2(distance, z_dist)
+                output.extend([angle, zenith_angle])
+
+        return output
 
 
     def vision_sim(self):
