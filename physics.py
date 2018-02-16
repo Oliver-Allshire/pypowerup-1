@@ -37,7 +37,9 @@ class PhysicsEngine:
         self.controller.add_device_gyro_channel('bno055')
 
     def initialize(self, hal_data):
-        pass
+    	self.start_pos_x = self.controller.x
+    	self.start_pos_y = self.controller.y
+    	self.start_pos_angle = self.controller.angle
 
     def update_sim(self, hal_data, now, tm_diff):
         """Update pyfrc simulator.
@@ -46,6 +48,9 @@ class PhysicsEngine:
             now: Current time in ms
             tm_diff: Difference between current time and time when last checked
         """
+        output = self.vision_sim()
+
+        print (output)
 
         steer_positions = []
         for can_id, offset in zip(self.module_steer_can_ids, self.module_steer_offsets):
@@ -72,13 +77,15 @@ class PhysicsEngine:
         vx /= 0.3048
         vy /= 0.3048
 
+
+
         self.controller.vector_drive(vy, vx, vw, tm_diff)
 
 
     def vision_sim(self):
-        pos_x = self.controller.x / 3.2808
-        pos_y = self.controller.y / 3.2808
-        pos_angle_deg = self.controller.angle
+        pos_x = (self.controller.x - self.start_pos_x) / 3.2808
+        pos_y = (self.controller.y - self.start_pos_y) / 3.2808
+        pos_angle_deg = self.controller.angle - self.start_pos_angle
         pos_angle = math.radians(-pos_angle_deg)
         z_dist = -0.42 + 0.15
 
